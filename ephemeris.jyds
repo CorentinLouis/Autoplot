@@ -1,0 +1,63 @@
+tr= getParam( 'timerange', '2016-07-05', 'timerange to load' )
+#tr= getParam( 'timerange', '2016-07-05', 'timerange to load' )
+
+R=     getParam( 'R',    'T', 'Radius (RJ)',            [ 'T', 'F' ] )
+Long3= getParam( 'Long3','T', 'Lon 3',                  [ 'T', 'F' ] )
+JLAT = getParam( 'JLAT', 'T', 'JLat',                   [ 'T', 'F' ] )
+MLat = getParam( 'MLat', 'T', 'MLat',                   [ 'T', 'F' ] ) 
+LT =  getParam(  'LT',   'T', 'Local Time',             [ 'T', 'F' ] )
+IOPhase =  getParam( 'IoPhase','T', 'Io Phase',         [ 'T', 'F' ] ) 
+IOLongitude =  getParam( 'IoLongitude','T', 'Lon Io',         [ 'T', 'F' ] ) 
+L =  getParam( 'L','T', 'L',                            [ 'T', 'F' ] ) 
+M =  getParam( 'M','T', 'M',                            [ 'T', 'F' ] )
+
+
+ds= getDataSet( 'vap+das2server:http://jupiter.physics.uiowa.edu/das/server?dataset=Juno/Ephemeris/Jovicentric&JLAT&start_time=2016-07-05T00:00:00.000Z&end_time=2016-07-06T00:00:00.000Z&interval=60', tr )
+
+result= None
+M_tmp= None
+
+if ( R=='T' ):
+    result= bundle( result, ds[:,0] )
+    print(ds[1,0])
+
+if ( Long3=='T' ):
+    result= bundle( result, ds[:,1] )
+
+if ( JLAT=='T' ):
+    result= bundle( result, ds[:,2] )
+
+if ( MLat=='T' ):
+    result= bundle( result, ds[:,3] )
+
+if ( LT=='T' ):
+    result= bundle( result, ds[:,4] )
+
+if ( L=='T' ):
+    lenL=len(ds[:,5])
+    result= bundle( result, ds[:,5] )
+
+#if ( M=='T' ):
+#    ds2= getDataSet( 'vap+das2server:http://jupiter.physics.uiowa.edu/das/server?dataset=Juno/Ephemeris/Jupiter_Footprint&interval=60&start_time=2016-07-05T00:00:00.000Z&end_time=2016-07-06T00:00:00.000Z',tr)
+    #if len(ds2[:,3]) == lenL:
+    #    result= bundle( result, ds2[:,3])
+#    result= bundle( result, ds2[:,0])
+#    else:
+#        res_list = []
+#        for i in range(0,len(ds[:,0])):
+#            if ds2[i,0] == ds2[0,0]:
+#                res_list.append(i)
+
+
+
+if ( IOPhase=='T' ):
+    result= bundle( result, ds[:,6] )
+
+if ( IOLongitude=='T' ):
+    Iolong_tmp=(ds[:,1] +180-ds[:,6])
+    Iolong_tmp= Iolong_tmp % '360 degrees' 
+    Iolong_tmp= putProperty( Iolong_tmp, QDataSet.LABEL, 'Io Longitude' )
+    result= bundle( result, Iolong_tmp) 
+
+
+#result= link( ds.property( QDataSet.DEPEND_0 ), result )
